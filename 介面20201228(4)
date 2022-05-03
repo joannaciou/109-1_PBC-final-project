@@ -1,0 +1,439 @@
+# -*- coding: utf8 -*-
+import tkinter as tk
+import tkinter.font as tkFont
+import tkinter.ttk as ttk
+from tkinter import StringVar
+from PIL import ImageTk, Image    # for png (need install)
+import csv
+import tkinter.messagebox
+from tkinter import Frame
+from random import choice
+
+csv_file = 0                      # 要選哪一個csv檔(區域)
+food_type = "0"
+staple_food = "0"
+budget = "0"
+
+class FoodSelector(tk.Frame):
+
+    def __init__(self):
+        tk.Frame.__init__(self, background = '#E4C4A7')
+        self.grid()
+        start()
+
+class start(tk.Frame):
+
+    def __init__(self):
+        tk.Frame.__init__(self, background = '#E4C4A7', height = 300, width = 500)
+        self.grid()
+        self.start_window()
+
+
+    def start_window(self):
+
+        f2 = tkFont.Font(size = 48, family = "微軟正黑體")
+
+        background_image = Image.open("final_project_start.png")
+        self.bg_img = ImageTk.PhotoImage(background_image)
+        self.start_lbltitle = tk.Label(self, image = self.bg_img, height = 300, width = 500)
+        self.start_lbltitle.place(x=0, y=0, relwidth=1, relheight=1)
+
+        button_image = Image.open("click_here_to_start.png")
+        self.bt_img = ImageTk.PhotoImage(button_image)
+        self.start_button = tk.Button(self, image = self.bt_img, height = 35, width = 162, bd=0, command = self.change)
+        self.start_button.place(x=77, y=167)
+
+    def change(self):       
+        self.destroy()
+        map_window()  # self.master
+
+class map_window(tk.Frame):
+
+    def __init__(self):
+        tk.Frame.__init__(self, background = '#E4C4A7', height = 799, width = 1000)
+        self.grid()
+        self.createWidgets()
+
+
+    def createWidgets(self):     # 起始頁面
+
+        f1 = tkFont.Font(size = 48, family = "微軟正黑體")
+        
+        background_image = Image.open("google_new_2.png")
+        self.bg_img = ImageTk.PhotoImage(background_image)
+        self.background_lbl = tk.Label(self, image = self.bg_img, height = 799, width = 1000)
+        self.background_lbl.place(x=0, y=0, relwidth=1, relheight=1)  #  relwidth=1, relheight=1
+        
+        
+        click_image = Image.open("點擊.png")
+        self.click_img = ImageTk.PhotoImage(click_image)
+        self.click_label = tk.Label(self, image = self.click_img, height = 100, width = 200)
+        self.click_label.place(x=10, y=10)
+    
+        load_1 = Image.open("台大_new_2.png")  # 台大校區測試2
+        self.image_1 = ImageTk.PhotoImage(load_1)
+        self.button_map_1 = tk.Button(self, image = self.image_1, height = 488, width = 389, command = lambda:[self.change(), self.choose_csv1()], bd = 0)
+        self.button_map_1.place(x=405, y=200)
+        
+        load_2 = Image.open("公館_new_2.png")  # 公館測試2.png
+        self.image_2 = ImageTk.PhotoImage(load_2)
+        self.button_map_2 = tk.Button(self, image = self.image_2, height = 189, width = 194, command = lambda:[self.change(), self.choose_csv2()], bd = 0)
+        self.button_map_2.place(x=200, y=496)
+
+        load_3 = Image.open("溫州街_new_2.png")  # 溫州街測試2.png
+        self.image_3 = ImageTk.PhotoImage(load_3)
+        self.button_map_3 = tk.Button(self, image = self.image_3, height = 285, width = 289, command = lambda:[self.change(), self.choose_csv3()], bd = 0)
+        self.button_map_3.place(x=96, y=200)
+
+        load_4 = Image.open("118_new_2.png")  # 118測試2.png
+        self.image_4 = ImageTk.PhotoImage(load_4)
+        self.button_map_4 = tk.Button(self, image = self.image_4, height = 95, width = 194, command = lambda:[self.change(), self.choose_csv4()], bd = 0)
+        self.button_map_4.place(x=600, y=100)
+
+    def change(self):
+        self.destroy()
+        choose()  # self.master
+
+    def choose_csv1(self):   # 根據使用者點擊不同區域，選擇不同csv檔
+        global csv_file
+        csv_file = "校內.csv"
+
+    def choose_csv2(self):
+        global csv_file
+        csv_file = "公館.csv"
+
+    def choose_csv3(self):
+        global csv_file
+        csv_file = "溫州街.csv"
+
+    def choose_csv4(self):
+        global csv_file
+        csv_file = "118.csv"
+
+class choose(tk.Frame):
+
+    def __init__(self):
+        tk.Frame.__init__(self, height = 100, width = 1000, background = '#E4C4A7')
+        self.grid()
+        self.create_window()
+
+    def create_window(self):     # 條件選擇頁面
+        f1 = tkFont.Font(size = 12, family = "標楷體")
+
+        dict1 = {"中式":["米食", "麵類", "餃類", "鍋類"], "日式":["拉麵", "米食"], "韓式":["ALL"], "南洋":["ALL"], "美式":["速食", "牛排", "其他"], "義式":["ALL"], "印式":["ALL"], "其他":["ALL"]}
+        var_material = tk.StringVar()
+
+
+        label1_image = Image.open("想吃什麼風格的食物.png")
+        self.label1_img = ImageTk.PhotoImage(label1_image)
+        self.label1 = tk.Label(self, text = "想吃什麼風格的食物", image = self.label1_img, height = 125, width = 500, font = f1, fg = "Brown")
+        self.label1.grid(row = 0, column = 3, sticky = tk.W+tk.E) 
+
+
+        self.combobox1 = ttk.Combobox(self, values = list(dict1.keys()), textvariable=var_material, state="readonly")
+        self.combobox1.bind('<<ComboboxSelected>>', lambda event: self.combobox2.config(values=dict1[var_material.get()]))  # 第二個下拉選單隨第一個變動
+        self.combobox1.grid(row = 1, column = 3, sticky = tk.W+tk.E)
+
+        label2_image = Image.open("想吃什麼主食.png")
+        self.label2_img = ImageTk.PhotoImage(label2_image)
+        self.label2 = tk.Label(self, text = "想吃什麼主食", image = self.label2_img, height = 125, width = 500, font = f1, fg = "Brown")
+        self.label2.grid(row = 3, column = 3, sticky = tk.W+tk.E) 
+
+        self.combobox2 = ttk.Combobox(self, state="readonly")
+        self.combobox2.grid(row = 4, column = 3, sticky = tk.W+tk.E)
+
+        label3_image = Image.open("想花多少錢.png")
+        self.label3_img = ImageTk.PhotoImage(label3_image)       
+        self.label3 = tk.Label(self, text = "想花多少錢", image = self.label3_img, height = 125, width = 500, font = f1, fg = "Brown")
+        self.label3.grid(row = 6, column = 3, sticky = tk.W+tk.E) 
+
+        self.combobox3 = ttk.Combobox(self, values = ["100以下", "100-200", "200-350", "350以上"], state="readonly")
+        self.combobox3.grid(row = 7, column = 3, sticky = tk.W+tk.E)
+
+        sure_image = Image.open("呈現所有搜尋結果.png")
+        self.sure_img = ImageTk.PhotoImage(sure_image)
+        self.button_sure = tk.Button(self, image = self.sure_img, height = 40, width = 500, font = f1, fg = "Red", command = lambda:[self.checkcmb_1(), self.checkcmb_2(), self.checkcmb_3(), self.change()])
+        self.button_sure.grid(row = 9 , column = 3, sticky = tk.W+tk.E)
+
+        autochs2_image = Image.open("給有選擇障礙的你.png")
+        self.autochs2_img = ImageTk.PhotoImage(autochs2_image)
+        self.label_autochs2 = tk.Label(self, image = self.autochs2_img, height = 70, width = 500, font = f1, fg = "Black")
+        self.label_autochs2.grid(row = 13, column = 3,  sticky = tk.W+tk.E) 
+
+        autochs_image = Image.open("請幫我選一間QQ.png")
+        self.autochs_img = ImageTk.PhotoImage(autochs_image)
+        self.button_autochs = tk.Button(self, image = self.autochs_img, height = 40, width = 500, font = f1, fg = "Red", command = lambda:[self.checkcmb_1(), self.checkcmb_2(), self.checkcmb_3(), self.change_autochs()])
+        self.button_autochs.grid(row = 15, column = 3, sticky = tk.W+tk.E)
+
+    # 紀錄每個下拉選單選擇的值
+    def checkcmb_1(self):
+        global food_type
+
+        if self.combobox1.get() == "中式":
+            food_type = "C"
+        elif self.combobox1.get() == "日式":
+            food_type = "J"
+        elif self.combobox1.get() == "韓式":
+            food_type = "K"
+        elif self.combobox1.get() == "南洋":
+            food_type = "S"
+        elif self.combobox1.get() == "美式":
+            food_type = "A"
+        elif self.combobox1.get() == "義式":
+            food_type = "I"
+        elif self.combobox1.get() == "印式":
+            food_type = "IN"
+        elif self.combobox1.get() == "其他":
+            food_type = "O"
+        elif self.combobox1.get() == "":  # 使用者沒選
+            food_type = ""
+
+    def checkcmb_2(self):
+        global staple_food
+
+        if self.combobox2.get() == "米食":
+            staple_food = "R"
+        elif self.combobox2.get() == "麵類":
+            staple_food = "N"
+        elif self.combobox2.get() == "拉麵":
+            staple_food = "N"
+        elif self.combobox2.get() == "餃類":
+            staple_food = "D"
+        elif self.combobox2.get() == "鍋類":
+            staple_food = "P"
+        elif self.combobox2.get() == "ALL":
+            staple_food = ""
+        elif self.combobox2.get() == "速食":
+            staple_food = "F"
+        elif self.combobox2.get() == "牛排":
+            staple_food = "S"
+        elif self.combobox2.get() == "其他":
+            staple_food = "O"
+        elif self.combobox2.get() == "":  # 使用者沒選
+            staple_food = ""
+
+    def checkcmb_3(self):
+        global budget
+
+        if self.combobox3.get() == "100以下":
+            budget = "100"
+        elif self.combobox3.get() == "100-200":
+            budget = "200"
+        elif self.combobox3.get() == "200-350":
+            budget = "300"
+        elif self.combobox3.get() == "350以上":
+            budget = "350"
+        elif self.combobox3.get() == "":  # 使用者沒選
+            budget = ""
+
+    def change(self):
+        self.destroy()
+        result()
+
+    def change_autochs(self):
+        self.destroy()
+        result_autochs()
+
+
+
+class result(tk.Frame):
+
+    def __init__(self):
+        tk.Frame.__init__(self, background = '#E4C4A7')
+        self.grid()
+        self.create_window()
+
+    def create_window(self):
+
+        f1 = tkFont.Font(size = 24, family = "標楷體")
+        f2 = tkFont.Font(size = 24, family = "微軟正黑體")
+        selected_rst = []     # 最後要呈現的所有店家
+
+        with open(csv_file, "r", newline='', encoding = "utf8") as csvfile:
+            cheader = csvfile.readline()
+            reader = csv.DictReader(csvfile, fieldnames=("店家名稱", "風格", "主食", "價位"), quotechar='"')
+            for arow in reader:
+                if food_type in arow["風格"] and staple_food in arow["主食"] and budget in arow["價位"]:
+                    selected_rst.append(arow["店家名稱"])
+
+        if selected_rst == []:       # 沒有符合條件的餐廳
+        
+            nomatch1_image = Image.open("ooops沒有符合的餐廳.png")
+            self.nomatch1_img = ImageTk.PhotoImage(nomatch1_image)
+            self.label_nomatch1 = tk.Label(self, image = self.nomatch1_img, height = 150, width = 1000, font = f1, fg = "Red")
+            self.label_nomatch1.grid(row = 3, column = 3, sticky = tk.W+tk.E)
+            
+            nomatch2_image = Image.open("再試試別的搜尋條件吧.png")
+            self.nomatch2_img = ImageTk.PhotoImage(nomatch2_image)
+            self.label_nomatch2 = tk.Label(self, image = self.nomatch2_img, height = 150, width = 1000, font = f1, fg = "Red")
+            self.label_nomatch2.grid(row = 4, column = 3, sticky = tk.W+tk.E)
+            
+            return_image = Image.open("返回.png")
+            self.return_img = ImageTk.PhotoImage(return_image)
+            self.button_return= tk.Button(self, image = self.return_img, height = 150, width = 1000, font = f2, fg = "Black", command = self.change)
+            self.button_return.grid(row = 6, column = 3, rowspan = 1 , columnspan = 1, sticky = tk.W+tk.E)
+
+        else:                        # 顯示餐廳
+
+            Lb1_image = Image.open("您可以選擇.png")
+            self.Lb1_img = ImageTk.PhotoImage(Lb1_image)
+            self.Lb1 = tk.Label(self, image = self.Lb1_img, height = 150, width = 1000, font = f1, fg = "Blue")
+            self.Lb1.grid(row = 0, column = 1, columnspan = 2)
+            self.rst_lbl = tk.Listbox(self)
+
+            for i in range(len(selected_rst)):
+                self.add_label(selected_rst[i], i + 1)
+                self.add_button(selected_rst[i], i + 1)
+
+            self.button_return= tk.Button(self, text="再一次", height = 1, width = 5, font = f2, fg = "#582A20", command = self.change, bg = "#F4D9C1")
+            self.button_return.grid(column = 1, columnspan = 2, sticky = tk.E + tk.W + tk.S)
+            self.button_return_f= tk.Button(self, text="結束", height = 1, width = 5, font = f2, fg = "#582A20", command = self.quit, bg = "#F4D9C1")
+            self.button_return_f.grid(column = 1, columnspan = 2, sticky = tk.E + tk.W + tk.S)
+
+
+    def add_label(self, text_input, r):   # 生成標籤
+        f1 = tkFont.Font(size = 16, family = "微軟正黑體")
+        
+        self.label_add = tk.Label(self, text = text_input, font = f1, bg = "#A3765D", fg = "white")
+        self.label_add.grid(row = r, column = 1, sticky = tk.W+tk.E+tk.S+tk.N)
+
+    def add_button(self, restaurant, r):  # 生成評論按鈕
+        f1 = tkFont.Font(size = 16, family = "微軟正黑體")
+        self.button_add = tk.Button(self, text = 'click here for comment', command =lambda:[self.commands_window(restaurant)], font = f1, bg = "#A3765D", fg = "white")
+        self.button_add.grid(row = r, column = 2, sticky = tk.W+tk.E)
+
+    def commands_window(self, restaurant):
+        window = tk.Toplevel(bg = "#F4D9C1")
+        window.grid()
+        window.geometry('500x300')
+
+        def add_label_window(window, text_input):  # 生成標籤
+        
+            f1 = tkFont.Font(size = 12, family = "微軟正黑體")
+            window.label_add = tk.Label(window, text = text_input, bg = "#F4D9C1", fg = "#582A20", font = f1, wraplength = 300, anchor = 'e')
+            window.label_add.pack() 
+
+        command_list = []
+        with open(csv_file, "r", newline='', encoding = "utf8") as csvfile:
+            cheader = csvfile.readline()
+            reader = csv.DictReader(csvfile, fieldnames=("店家名稱", "風格", "主食", "價位", "評論", "評等"), quotechar='"')
+            for arow in reader:
+                if restaurant in arow["店家名稱"]:
+                    arow["評論"] = arow["評論"].strip("[]")
+                    arow["評論"] = arow["評論"].replace("\'", '')
+                    command_list = arow["評論"].split(',')
+        window.comment_label = add_label_window(window, '⭐️'+arow["評等"])
+        for com in range(len(command_list)):  # 顯示評論
+            command_list[com] = command_list[com].strip()
+            window.comment_label = add_label_window(window, command_list[com].strip("''"))
+
+    def change(self):
+        self.destroy()
+        start()
+
+class result_autochs(tk.Frame):    # 隨機選擇模式       
+
+    def __init__(self):
+        tk.Frame.__init__(self, background = '#E4C4A7')
+        self.grid()
+        self.create_window()
+
+    def create_window(self):
+
+        f1 = tkFont.Font(size = 24, family = "標楷體")
+        f2 = tkFont.Font(size = 24, family = "微軟正黑體")
+        selected_rst = []     # 最後要呈現的所有店家
+
+        with open(csv_file, "r", newline='', encoding = "utf8") as csvfile:
+            cheader = csvfile.readline()
+            reader = csv.DictReader(csvfile, fieldnames=("店家名稱", "風格", "主食", "價位"), quotechar='"')
+            for arow in reader:
+                if food_type in arow["風格"] and staple_food in arow["主食"] and budget in arow["價位"]:
+                    selected_rst.append(arow["店家名稱"])
+
+        if selected_rst == []:       # 沒有符合條件的餐廳
+        
+            nomatch1_image = Image.open("ooops沒有符合的餐廳.png")
+            self.nomatch1_img = ImageTk.PhotoImage(nomatch1_image)
+            self.label_nomatch1 = tk.Label(self, image = self.nomatch1_img, height = 150, width = 1000, font = f1, fg = "Red")
+            self.label_nomatch1.grid(row = 3, column = 3, sticky = tk.W+tk.E)
+            
+            nomatch2_image = Image.open("再試試別的搜尋條件吧.png")
+            self.nomatch2_img = ImageTk.PhotoImage(nomatch2_image)
+            self.label_nomatch2 = tk.Label(self, image = self.nomatch2_img, height = 150, width = 1000, font = f1, fg = "Red")
+            self.label_nomatch2.grid(row = 4, column = 3, sticky = tk.W+tk.E)
+
+            return_image = Image.open("返回.png")
+            self.return_img = ImageTk.PhotoImage(return_image)
+            self.button_return= tk.Button(self, image = self.return_img, height = 150, width = 1000, font = f2, fg = "Black", command = self.change)
+            self.button_return.grid(row = 6, column = 3, rowspan = 1 , columnspan = 1, sticky = tk.W+tk.E)
+
+        else:                        # 顯示餐廳
+
+            Lb1_image = Image.open("您可以選擇.png")
+            self.Lb1_img = ImageTk.PhotoImage(Lb1_image)
+            self.Lb1 = tk.Label(self, image = self.Lb1_img, height = 150, width = 1000, font = f1, fg = "Blue")
+            self.Lb1.grid(row = 0, column = 1, columnspan = 2)
+            self.rst_lbl = tk.Listbox(self)
+
+            chosen_one = choice(selected_rst)  # 隨機選擇一家餐廳
+            selected_rst = []
+            selected_rst.append(chosen_one)
+
+            for i in range(len(selected_rst)):
+                self.add_label(selected_rst[i], i + 1)
+                self.add_button(selected_rst[i], i + 1)
+
+
+            self.button_return= tk.Button(self, text="再一次", height = 1, width = 5, font = f2, fg = "#582A20", command = self.change, bg = "#F4D9C1")
+            self.button_return.grid(column = 1, columnspan = 2, sticky = tk.E + tk.W + tk.S)
+            self.button_return_f= tk.Button(self, text="結束", height = 1, width = 5, font = f2, fg = "#582A20", command = self.quit, bg = "#F4D9C1")
+            self.button_return_f.grid(column = 1, columnspan = 2, sticky = tk.E + tk.W + tk.S)
+
+
+    def add_label(self, text_input, r):   # 生成標籤
+    
+        f1 = tkFont.Font(size = 16, family = "微軟正黑體")
+        
+        self.label_add = tk.Label(self, text = text_input, font = f1, bg = "#A3765D", fg = "white")
+        self.label_add.grid(row = r, column = 1, sticky = tk.W+tk.E+tk.S+tk.N)
+
+    def add_button(self, restaurant, r):  # 生成評論按鈕
+
+        f1 = tkFont.Font(size = 16, family = "微軟正黑體")
+        self.button_add = tk.Button(self, text = 'click here for comment', command =lambda:[self.commands_window(restaurant)], font = f1, bg = "#A3765D", fg = "white")
+        self.button_add.grid(row = r, column = 2, sticky = tk.W+tk.E)
+
+    def commands_window(self, restaurant):
+        window = tk.Toplevel(bg = "#F4D9C1")
+        window.grid()
+        window.geometry('500x300')
+
+        def add_label_window(window, text_input):  # 生成標籤
+        
+            f1 = tkFont.Font(size = 12, family = "微軟正黑體")
+            window.label_add = tk.Label(window, text = text_input, bg = "#F4D9C1", fg = "#582A20", font = f1, wraplength = 300, anchor = 'e')
+            window.label_add.pack() 
+
+        command_list = []
+        with open(csv_file, "r", newline='', encoding = "utf8") as csvfile:
+            cheader = csvfile.readline()
+            reader = csv.DictReader(csvfile, fieldnames=("店家名稱", "風格", "主食", "價位", "評論", "評等"), quotechar='"')
+            for arow in reader:
+                if restaurant in arow["店家名稱"]:
+                    arow["評論"] = arow["評論"].strip("[]")
+                    arow["評論"] = arow["評論"].replace("\'", '')
+                    command_list = arow["評論"].split(',')
+        window.comment_label = add_label_window(window, '⭐️'+arow["評等"])
+        for com in range(len(command_list)):  # 顯示評論
+            command_list[com] = command_list[com].strip()
+            window.comment_label = add_label_window(window, command_list[com].strip("''"))
+
+    def change(self):
+        self.destroy()
+        start()
+
+
+my_selector = FoodSelector()
+my_selector.master.title("午餐選擇器 My food selector")
+my_selector.mainloop() 
